@@ -233,7 +233,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.checkBox_en_td_filter.stateChanged.connect(self.set_PR_params)
         self.checkBox_en_autodet.stateChanged.connect(self.set_PR_params)
         self.checkBox_en_noise_source.stateChanged.connect(self.switch_noise_source)
-        self.checkBox_en_peakhold.stateChanged.connect(self.set_PR_params) 
+        self.checkBox_en_peakhold.stateChanged.connect(self.set_PR_params)
 
 
         # Connect spinbox signals
@@ -803,7 +803,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 self.CAFMatrixOld = CAFMatrixNew
                 CAFMatrix = CAFMatrixNew
             else:
-                self.CAFMatrixOld = CAFMatrix                
+                self.CAFMatrixOld = CAFMatrix
 
             CAFMatrixLog = 20 * np.log10(CAFMatrix)  # Change to logscale
 
@@ -979,7 +979,7 @@ def pr():
     est_win = form.spinBox_cfar_est_win.value()
     guard_win = form.spinBox_cfar_guard_win.value()
     thresh_det = form.doubleSpinBox_cfar_threshold.value()
-    
+
     en_peakhold = form.checkBox_en_peakhold.checkState()
 
     ip_addr = form.ip_addr
@@ -998,13 +998,8 @@ def pr():
 				'est_win':est_win,
 				'guard_win':guard_win,
 				'thresh_det':thresh_det,
-<<<<<<< Updated upstream
-                                'en_peakhold':en_peakhold,
+                'en_peakhold':en_peakhold,
 				'ip_addr':ip_addr})
-=======
-				'ip_addr':ip_addr
-            })
->>>>>>> Stashed changes
 
 @post('/pr')
 def do_pr():
@@ -1046,7 +1041,7 @@ def do_pr():
 
     thresh_det = request.forms.get('thresh_det')
     form.doubleSpinBox_cfar_threshold.setProperty("value", thresh_det)
-    
+
     en_peakhold = request.forms.get('en_peakhold')
     form.checkBox_en_peakhold.setChecked(True if en_peakhold=="on" else False)
 
