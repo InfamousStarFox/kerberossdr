@@ -68,8 +68,8 @@ echo "Starting KerberosSDR"
 
 # Check for old processes that could interfere, print warning:
 for string in rtl sim _recei.*sync gate hydra ; do
-    pgrep -af $string
-	if [[ $? -eq 0 ]] ; then 
+    pgrep -af $string  > /dev/null
+	if [[ $? -eq 0 ]] ; then
         if [[ "$FORCE_KILL" != "yes" ]]; then
             read -p "The processes listed above were found and could interfere with the program. Do you want to kill them now? [y|N]" -n1 -r
             echo # newline.
@@ -83,7 +83,7 @@ for string in rtl sim _recei.*sync gate hydra ; do
 	fi
 done
 
-#sudo kill $(ps aux | grep 'rtl' | awk '{print $2}') 2>$OUTPUT_FD || true
+sudo kill $(ps aux | grep 'hydra_main_window.py' | awk '{print $2}') 2> /dev/null || true
 
 
 # Enable on the Pi 3 to prevent the internet from hogging the USB bandwidth
