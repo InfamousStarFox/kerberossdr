@@ -17,24 +17,20 @@ a{
 }
 input[type="checkbox"]{
   width:20px;
-  height:20px;
   background:white;
-  border-radius:5px;
-  border:2px solid #555;
+  margin-left: -2px;
   vertical-align: text-bottom;
 }
-select{
+input, select{
   background-color: #555555;
   color: white;
   font-size:20px;
-  border: 2px solid #355555;
+  border: 1px solid #777777;
+  width: 100%;
 }
-select:disabled{
+input:disabled, select:disabled{
   background-color: #777777;
   color: #999999;
-}
-input, select{
-    width: 100%;
 }
 iframe{
   background-color: transparent;
@@ -45,7 +41,6 @@ iframe{
 /*Classes*/
 .header{
   background-color: #555555;
-  width: 100%;
   text-align: center;
   padding: 10px;
 }
@@ -73,11 +68,27 @@ iframe{
   text-align: center;
   width: 100%;
 }
-.btn a{
+.btn a, a.btn{
     color: white;
     text-decoration: none;
     position: relative;
     top: 15%;
+}
+.table{
+  width: 100%;
+  border-collapse: collapse;
+}
+.table th {
+  background-color: #555555;
+  color: white;
+}
+.table td, .table th{
+  border: 1px solid #555555;
+  padding: 8px;
+  text-align: left;
+}
+.table tr:nth-child(even){
+  background-color: #f2f2f2;
 }
 .card{
  background-color: #ffffff;
@@ -87,6 +98,12 @@ iframe{
  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.46);
  margin: 20px;
  float: left;
+}
+.card-header{
+  margin: -20px -20px 20px -20px;
+}
+.card canvas{
+  max-width:100%;
 }
 .field{
   width: 400px;
@@ -103,6 +120,9 @@ iframe{
   width: 144px;
   display: inline-block;
 }
+.field-body p{
+  margin: 0px 5px;
+}
 
 /*Mobile Properties*/
 @media screen and (max-width: 1072px) {
@@ -112,6 +132,9 @@ iframe{
     margin: 20px auto;
     float: none;
   }
+  .card-header{
+    margin: -5px -5px 10px -5px;
+
 }
 
 @media screen and (max-width: 500px) {

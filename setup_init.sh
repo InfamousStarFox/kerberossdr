@@ -14,9 +14,8 @@ sudo chmod +x kill.sh
 
 sudo mkdir -p /ram
 
-sudo ln -sf /ram/pr.jpg _webDisplay/pr.jpg
-sudo ln -sf /ram/DOA_value.html _webDisplay/DOA_value.html
-sudo ln -sf /ram/spectrum.jpg _webDisplay/spectrum.jpg
-sudo ln -sf /ram/sync.jpg _webDisplay/sync.jpg
-sudo ln -sf /ram/doa.jpg _webDisplay/doa.jpg
-sudo ln -sf /ram/pr.jpg _webDisplay/pr.jpg
+sudo ln -sf /ram/DOA_value.html static/DOA_value.html
+sudo ln -sf /ram/doa.jpg static/images/doa.jpg
+sudo ln -sf /ram/pr.jpg static/images/pr.jpg
+sudo ln -sf /ram/spectrum.jpg static/images/spectrum.jpg
+sudo ln -sf /ram/sync.jpg static/images/sync.jpg

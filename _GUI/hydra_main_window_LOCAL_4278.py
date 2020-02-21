@@ -982,8 +982,7 @@ def pr():
 
     ip_addr = form.ip_addr
 
-    return template ('pr.tpl', {
-                'en_pr':en_pr,
+    return template ('pr.tpl', {'en_pr':en_pr,
 				'ref_ch':ref_ch,
 				'surv_ch':surv_ch,
 				'en_clutter':en_clutter,
@@ -996,13 +995,8 @@ def pr():
 				'est_win':est_win,
 				'guard_win':guard_win,
 				'thresh_det':thresh_det,
-<<<<<<< Updated upstream
                                 'en_peakhold':en_peakhold,
 				'ip_addr':ip_addr})
-=======
-				'ip_addr':ip_addr
-            })
->>>>>>> Stashed changes
 
 @post('/pr')
 def do_pr():
@@ -1069,7 +1063,6 @@ def do_pr():
 
 @get('/doa')
 def doa():
-    center_freq = form.doubleSpinBox_center_freq.value()
     ant_arrangement_index = int(form.comboBox_antenna_alignment.currentIndex())
     ant_meters = form.doubleSpinBox_DOA_d.value()
     en_doa = form.checkBox_en_DOA.checkState()
@@ -1080,9 +1073,7 @@ def doa():
     en_fbavg = form.checkBox_en_DOA_FB_avg.checkState()
     ip_addr = form.ip_addr
 
-    return template ('doa.tpl', {
-                'center_freq':center_freq,
-                'ant_arrangement_index':ant_arrangement_index,
+    return template ('doa.tpl', {'ant_arrangement_index':ant_arrangement_index,
 #				'ant_spacing':ant_spacing,
                 'ant_meters' :ant_meters,
 				'en_doa':en_doa,
@@ -1091,8 +1082,7 @@ def doa():
 				'en_MEM':en_MEM,
 				'en_MUSIC':en_MUSIC,
 				'en_fbavg':en_fbavg,
-				'ip_addr':ip_addr
-            })
+				'ip_addr':ip_addr})
 
 
 @post('/doa')
@@ -1140,11 +1130,9 @@ def sync():
     en_sync = form.checkBox_en_sync_display.checkState()
     en_noise = form.checkBox_en_noise_source.checkState()
     ip_addr = form.ip_addr
-    return template ('sync.tpl', {
-                'en_sync':en_sync,
+    return template ('sync.tpl', {'en_sync':en_sync,
 				'en_noise':en_noise,
-				'ip_addr':ip_addr
-            })
+				'ip_addr':ip_addr})
 
 
 @post('/sync')
@@ -1203,8 +1191,7 @@ def init():
     decimation = form.spinBox_decimation.value()
     ip_addr = form.ip_addr
 
-    return template ('init.tpl', {
-                'center_freq':center_freq,
+    return template ('init.tpl', {'center_freq':center_freq,
 				'samp_index':samp_index,
                 'uniform_gain':uniform_gain,
 				'gain_index':gain_index,
@@ -1215,8 +1202,7 @@ def init():
 				'filt_bw':filt_bw,
 				'fir_size':fir_size,
 				'decimation':decimation,
-				'ip_addr':ip_addr
-            })
+				'ip_addr':ip_addr})
 
 @post('/init') # or @route('/login', method='POST')
 def do_init():
@@ -1311,11 +1297,8 @@ def stats():
     else:
        ovr_drv = "NO"
 
-    return template ('stats.tpl', {
-                'upd_rate':upd_rate,
-				'ovr_drv':ovr_drv
-            })
-
+    return template ('stats.tpl', {'upd_rate':upd_rate,
+				'ovr_drv':ovr_drv})
 
 init_settings()
 app.exec_()

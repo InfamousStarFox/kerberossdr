@@ -2,7 +2,6 @@
 
 BUFF_SIZE=256 #Must be a power of 2. Normal values are 128, 256. 512 is possible on a fast PC.
 IPADDR="0.0.0.0"
-IPPORT="8081"
 
 ### Uncomment the following section to automatically get the IP address from interface wlan0 ###
 ### Don't forget to comment out "IPADDR="0.0.0.0" ###
@@ -66,7 +65,5 @@ sudo chrt -r 50 ionice -c 1 -n 0 ./_receiver/C/rtl_daq $BUFF_SIZE 2>/dev/null 1|
 # Comment the above and uncomment the below to show all errors to the log files (leave off normally as log files can grow large)
 #sudo chrt -r 50 ionice -c 1 -n 0 ./_receiver/C/rtl_daq $BUFF_SIZE 2>log_rtl_daq 1| sudo chrt -r 50 ./_receiver/C/sync $BUFF_SIZE 2>log_sync 1| sudo chrt -r 50 ./_receiver/C/gate $BUFF_SIZE 2>log_gate 1|sudo nice -n -20 sudo -u $curr_user python3 -O _GUI/hydra_main_window.py $BUFF_SIZE $IPADDR &>log_python&
 
-# Start PHP webserver which serves the updating images
-echo "Python Server running at $IPADDR:8080"
-echo "PHP Server running at $IPADDR:$IPPORT"
-sudo php -S $IPADDR:$IPPORT -t _webDisplay >&- 2>&-
+# Start Python webserver
+echo "Starting Server at $IPADDR:8080"
