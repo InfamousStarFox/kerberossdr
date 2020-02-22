@@ -1,10 +1,6 @@
 // bearings recorded latitude, longitude, bearing degrees
-// var bearings = [{ freq: 104.1, time: 1578610965, lat: 48.00, lgn: -122.00, dgr: 45 }]
-var bearings = [
-  { lat: 48.8204, lgn: -122.5723, dgr: 0 },
-  { lat: 48.8204, lgn: -122.5723, dgr: 45 },
-  { lat: 48.8204, lgn: -122.5723, dgr: 270 },
-];
+// var bearings = [{ freq: 100.00, time: 1577840400, lat: 00.0000, lgn: 00.0000, dgr: 45 }]
+var bearings = [];
 
 var mymap = null;
 var marker = null;
@@ -88,7 +84,7 @@ function addLine(direction, distance, color){
     source,
     dest
   ]);
-  
+
   line.setStyle({
       color: color,
       opacity: 0.2

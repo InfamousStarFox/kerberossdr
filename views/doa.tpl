@@ -1,8 +1,13 @@
-<html>
+<!doctype html>
+<html lang="en">
 <head>
-  <meta content="width=device-width, initial-scale=1" name="viewport" />
-  <meta http-equiv="Cache-control" content="no-cache" charset="utf-8">
-  <link rel="stylesheet" type="text/css" href="static/style.css">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KerberosSDR</title>
+
+  <link href="/static/lib/bootstrap/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/style.css" rel="stylesheet">
   <link rel="stylesheet" href="static/lib/leaflet/leaflet.css"/>
 
   <script type='text/javascript' src="static/lib/leaflet/leaflet.js"></script>
@@ -28,250 +33,284 @@
 
 </head>
 <body>
-  <div class="header">
-    <a class="header_init" href="/init">Configuration and Spectrum</a> |
-    <a class="header_sync" href="/sync">Sync</a> |
-    <a class="header_doa" id="active" href="/doa">DOA Estimation</a> |
-    <a class="header_pr" href="/pr">Passive Radar</a>
+
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+      <h1 class="navbar-brand mb-0">KerberosSDR</h1>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/init">Configuration and Spectrum</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/sync">Sync</a>
+          </li>
+          <li class="nav-item active">
+            <a class="nav-link" href="/doa">DOA Estimation</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/pr">Passive Radar</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <br>
+
+
+  <div class="container">
+    <div class="card-columns">
+
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="font-weight-bold">Antenna Configuration</h6>
+        </div>
+        <div class="card-body">
+
+          <form action="/doa" method="post">
+            <div class="form-group">
+              <input type="hidden" name="ant_config" value="ant_config" />
+              <label for="ant_arrangement">Arrangement:</label>
+              <select class="form-control" id="ant_arrangement" onChange="check_uca();" name="ant_arrangement">
+                <option value="0" {{!'selected="selected"' if ant_arrangement_index == 0 else ""}}>ULA</option>
+                <option value="1" {{!'selected="selected"' if ant_arrangement_index == 1 else ""}}>UCA</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              Spacing:
+              <div class="form-row">
+                <div class="col-4">
+                  <label for="ant_spacing">[meters]</label>
+                  <input class="form-control" id="inputMeters" type="number" value="{{ant_meters}}" step="0.0001" name="ant_spacing" oninput="from_meters(this.value)"/>
+                </div>
+                <div class="col-4">
+                  <label for="ant_spacing">[feet]</label>
+                  <input class="form-control" id="inputFeet" type="number" step="0.0001" oninput="from_feet(this.value)" placeholder="Feet"/>
+                </div>
+                <div class="col-4">
+                  <label for="ant_spacing">[inches]</label>
+                  <input class="form-control" id="inputInches" type="number" step="0.0001" oninput="from_inches(this.value)" placeholder="Inches"/>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              Recommended UCA Spacing:
+              <table class="table table-striped">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>{{center_freq}} MHz</th>
+                    <th>Min</th>
+                    <th>Max</th>
+                    <th>Best</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Meters</td>
+                    <td><span id="meter_min"></span></td>
+                    <td><span id="meter_max"></span></td>
+                    <td><span id="meter_best"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Feet</td>
+                    <td><span id="feet_min"></span></td>
+                    <td><span id="feet_max"></span></td>
+                    <td><span id="feet_best"></span></td>
+                  </tr>
+                  <tr>
+                    <td>Inches</td>
+                    <td><span id="inches_min"></span></td>
+                    <td><span id="inches_max"></span></td>
+                    <td><span id="inches_best"></span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="en_doa" value="on" {{!'checked="checked"' if en_doa >= 1 else ""}}>
+                <label class="form-check-label" for="en_doa">Enable DOA</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="doa_check">Algorithm</label>
+              <div class="ml-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="en_bartlett" value="on" {{!'checked="checked"' if en_bartlett >= 1 else ""}}>
+                  <label class="form-check-label" for="en_bartlett">Bartlett</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="en_capon" value="on" {{!'checked="checked"' if en_capon >= 1 else ""}}>
+                  <label class="form-check-label" for="en_capon">Capon</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="en_MEM" value="on" {{!'checked="checked"' if en_MEM >= 1 else ""}}>
+                  <label class="form-check-label" for="en_MEM">MEM</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="checkbox" name="en_MUSIC" value="on" {{!'checked="checked"' if en_MUSIC >= 1 else ""}}>
+                  <label class="form-check-label" for="en_MUSIC">MUSIC</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="form-check">
+                <input class="form-check-input" id="fb_avg" type="checkbox" name="en_fbavg" value="on" onChange="check_uca();" {{!'disabled' if ant_arrangement_index > 0 else ""}} {{!'checked="checked"' if en_fbavg >= 1 else ""}}>
+                <label class="form-check-label" for="en_fbavg">FB Average (Do not use with UCA)</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <input value="Update DOA" type="submit" class="btn btn-secondary w-100" />
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="font-weight-bold">Compass</h6>
+        </div>
+        <div class="card-body">
+          <canvas id="compass" class="card-img-top"></canvas>
+
+          <div class="form-group">
+            <div class="form-row">
+              <label class="col-6 mb-0" for="doa">Estimated DOA:</label>
+              <p class="col-6 mb-0" id="doa"> 0 deg </p>
+            </div>
+            <div class="form-row">
+              <label class="col-6 mb-0" for="pwr">Signal Power:</label>
+              <p class="col-6 mb-0" id="pwr"> 0 dB </p>
+            </div>
+            <div class="form-row">
+              <label class="col-6 mb-0" for="conf">DOA Confidence:</label>
+              <p class="col-6 mb-0" id="conf"> 0 </p>
+            </div>
+          </div>
+
+          <form onsubmit="setCookie()">
+            <div class="form-group">
+              <div class="form-row">
+                <div class="col-6">
+                  <label for="MIN_PWR">Min Signal Power</label>
+                  <input class="form-control" type="number" class="input" step="0.01" min="0" value="0" max="100" name="MIN_PWR" id="MIN_PWR">
+                </div>
+                <div class="col-6">
+                  <label for="MIN_CONF">Min DOA Confidence</label>
+                  <input class="form-control" type="number" class="input" step="1" min="0" value="0" max="100" name="MIN_CONF" id="MIN_CONF">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <input value="Update Compass" type="submit" class="btn btn-secondary w-100"/>
+            </div>
+          </form>
+          <script type="text/javascript">init_compass();</script>
+        </div>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="font-weight-bold">DOA Graph</h6>
+        </div>
+        <canvas id="doa_graph" class="card-img-top"></canvas>
+        <div class="card-body">
+          <script type="text/javascript">init_graph('/static/images/doa.jpg', 'doa_graph');</script>
+          <div id="stats" style="text-align:center;"></div>
+          <script type="text/javascript">ajax_page_refresh('/stats', 'stats');</script>
+        </div>
+      </div>
+
+      <div class="card shadow">
+        <div class="card-header">
+          <h6 class="font-weight-bold">Signal Direction Map</h6>
+        </div>
+        <div id="mapid" style="width: 100%; height: 400px;" class="card-img-top"></div>
+        <div class="card-body">
+          <script type='text/javascript'>init_map("{{center_freq}}");</script>
+
+          <form onsubmit="setCookie()">
+            <div class="form-group">
+              <label for="location">Location</label>
+              <div class="ml-3">
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="location" id="location_auto" value="location_auto" checked="checked">
+                  <label class="form-check-label" for="location_auto">Auto Detect</label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" name="location" id="location_manual" value="location_manual" checked="checked">
+                  <label class="form-check-label" for="location_manual">Manual</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-row">
+                <div class="col-6">
+                  <label for="offset">Set latitude</label>
+                  <input class="form-control" type="number" class="input" step="0.0001" min="-90" value="0" max="90" name="offset">
+                </div>
+                <div class="col-6">
+                  <label for="offset">Set longitude</label>
+                  <input class="form-control" type="number" class="input" step="0.0001" min="-180" value="0" max="80" name="offset">
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="offset">Heading (dgr)</label>
+              <input class="form-control" type="number" class="input" step="1" min="0" value="0" max="360" name="heading">
+            </div>
+            <div class="form-group">
+              <label for="offset">Bearing offset (dgr)</label>
+              <input class="form-control" type="number" class="input" step="1" min="0" value="0" max="360" name="offset">
+            </div>
+            <div class="form-group">
+              <input value="Update Graph" type="submit" class="btn btn-secondary w-100"/>
+            </div>
+          </form>
+        </div>
+      </div>
+
+    </div>
   </div>
 
+  <script type="text/javascript">
+  document.getElementById("meter_min").innerHTML = (mhz_to_meters({{center_freq}})/10).toFixed(4);
+  document.getElementById("meter_max").innerHTML = (mhz_to_meters({{center_freq}})/2).toFixed(4);
+  document.getElementById("meter_best").innerHTML = (mhz_to_meters({{center_freq}})/3).toFixed(4);
+  document.getElementById("feet_min").innerHTML = (mhz_to_feet({{center_freq}})/10).toFixed(4);
+  document.getElementById("feet_max").innerHTML = (mhz_to_feet({{center_freq}})/2).toFixed(4);
+  document.getElementById("feet_best").innerHTML = (mhz_to_feet({{center_freq}})/3).toFixed(4);
+  document.getElementById("inches_min").innerHTML = (mhz_to_inches({{center_freq}})/10).toFixed(4);
+  document.getElementById("inches_max").innerHTML = (mhz_to_inches({{center_freq}})/2).toFixed(4);
+  document.getElementById("inches_best").innerHTML = (mhz_to_inches({{center_freq}})/3).toFixed(4);
+  </script>
+  <script type="text/javascript">
+  function from_meters(valNum) {
+    document.getElementById("inputFeet").value=meters_to_feet(valNum);
+    document.getElementById("inputInches").value=meters_to_inches(valNum);
+  }
+  function from_feet(valNum) {
+    document.getElementById("inputMeters").value=feet_to_meters(valNum);
+    document.getElementById("inputInches").value=feet_to_inches(valNum);
+  }
+  function from_inches(valNum) {
+    document.getElementById("inputMeters").value=inches_to_meters(valNum);
+    document.getElementById("inputFeet").value=inches_to_feet(valNum);
+  }
+  </script>
 
-  <div class="card">
-    <div class="field">
-      <h2>Antenna Configuration</h2>
-    </div>
-    <form action="/doa" method="post">
-      <input type="hidden" name="ant_config" value="ant_config" />
+  <script src="/static/lib/bootstrap/jquery-1.12.4.min.js"></script>
+  <script src="/static/lib/bootstrap/bootstrap.min.js"></script>
 
-      <div class="field">
-        <div class="field-label">
-          <label for="ant_arrangement">Arrangement:</label>
-        </div>
-        <div class="field-body">
-          <select id="ant_arrangement" onChange="check_uca();" name = "ant_arrangement">
-            <option value="0" {{!'selected="selected"' if ant_arrangement_index == 0 else ""}}>ULA</option>
-            <option value="1" {{!'selected="selected"' if ant_arrangement_index == 1 else ""}}>UCA</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="field">
-        <div class="field-label">
-          <label for="ant_spacing">Spacing [meters]:</label>
-        </div>
-        <div class="field-body">
-          <input id="inputMeters" type="number" value="{{ant_meters}}" step="0.0001" name="ant_spacing" oninput="from_meters(this.value)"/>
-        </div>
-        <div class="field-label">
-          <label for="ant_spacing">Spacing [feet]:</label>
-        </div>
-        <div class="field-body">
-          <input id="inputFeet" type="number" step="0.0001" oninput="from_feet(this.value)" placeholder="Feet"/>
-        </div>
-        <div class="field-label">
-          <label for="ant_spacing">Spacing [inches]:</label>
-        </div>
-        <div class="field-body">
-          <input id="inputInches" type="number" step="0.0001" oninput="from_inches(this.value)" placeholder="Inches"/>
-        </div>
-        <script type="text/javascript">
-        function from_meters(valNum) {
-          document.getElementById("inputFeet").value=meters_to_feet(valNum);
-          document.getElementById("inputInches").value=meters_to_inches(valNum);
-        }
-        function from_feet(valNum) {
-          document.getElementById("inputMeters").value=feet_to_meters(valNum);
-          document.getElementById("inputInches").value=feet_to_inches(valNum);
-        }
-        function from_inches(valNum) {
-          document.getElementById("inputMeters").value=inches_to_meters(valNum);
-          document.getElementById("inputFeet").value=inches_to_feet(valNum);
-        }
-        </script>
-      </div>
-
-      <div class="field">
-        Recommended Spacing:
-        <table class="table">
-          <tr>
-            <th>{{center_freq}} MHz</th>
-            <th>Min</th>
-            <th>Max</th>
-            <th>Best</th>
-            <tr>
-              <td>Meters</td>
-              <td><span id="meter_min"></span></td>
-              <td><span id="meter_max"></span></td>
-              <td><span id="meter_best"></span></td>
-            </tr>
-            <tr>
-              <td>Feet</td>
-              <td><span id="feet_min"></span></td>
-              <td><span id="feet_max"></span></td>
-              <td><span id="feet_best"></span></td>
-            </tr>
-            <tr>
-              <td>Inches</td>
-              <td><span id="inches_min"></span></td>
-              <td><span id="inches_max"></span></td>
-              <td><span id="inches_best"></span></td>
-            </tr>
-          </table>
-          <script type="text/javascript">
-          document.getElementById("meter_min").innerHTML = (mhz_to_meters({{center_freq}})/10).toFixed(4);
-          document.getElementById("meter_max").innerHTML = (mhz_to_meters({{center_freq}})/2).toFixed(4);
-          document.getElementById("meter_best").innerHTML = (mhz_to_meters({{center_freq}})/3).toFixed(4);
-
-          document.getElementById("feet_min").innerHTML = (mhz_to_feet({{center_freq}})/10).toFixed(4);
-          document.getElementById("feet_max").innerHTML = (mhz_to_feet({{center_freq}})/2).toFixed(4);
-          document.getElementById("feet_best").innerHTML = (mhz_to_feet({{center_freq}})/3).toFixed(4);
-
-          document.getElementById("inches_min").innerHTML = (mhz_to_inches({{center_freq}})/10).toFixed(4);
-          document.getElementById("inches_max").innerHTML = (mhz_to_inches({{center_freq}})/2).toFixed(4);
-          document.getElementById("inches_best").innerHTML = (mhz_to_inches({{center_freq}})/3).toFixed(4);
-          </script>
-        </div>
-
-        <div class="field">
-          <div class="field-label">
-            <label for="en_doa">Enable DOA</label>
-          </div>
-          <div class="field-body">
-            <input type="checkbox" name="en_doa" value="on" {{!'checked="checked"' if en_doa >= 1 else ""}}>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="field-label">
-            <label for="doa_check">Algorithm</label>
-          </div>
-          <div class="field-body">
-            <input class="doa_check" type="checkbox" name="en_bartlett" value="on" {{!'checked="checked"' if en_bartlett >= 1 else ""}}>Bartlett<br>
-            <input class="doa_check" type="checkbox" name="en_capon" value="on" {{!'checked="checked"' if en_capon >= 1 else ""}}>Capon<br>
-            <input class="doa_check" type="checkbox" name="en_MEM" value="on" {{!'checked="checked"' if en_MEM >= 1 else ""}}>MEM<br>
-            <input class="doa_check" type="checkbox" name="en_MUSIC" value="on" {{!'checked="checked"' if en_MUSIC >= 1 else ""}}>MUSIC<br>
-          </div>
-        </div>
-
-        <div class="field">
-          <div class="field-label">
-            <label for="en_fbavg">FB Average (Do not use with UCA)</label>
-          </div>
-          <div class="field-body">
-            <input id="fb_avg" type="checkbox" name="en_fbavg" value="on" onChange="check_uca();" {{!'disabled' if ant_arrangement_index > 0 else ""}} {{!'checked="checked"' if en_fbavg >= 1 else ""}}>
-          </div>
-        </div>
-
-        <div class="field">
-          <input value="Update DOA" type="submit" class="btn" />
-        </div>
-      </form>
-    </div>
-
-
-    <div class="card">
-      <canvas id="compass"></canvas>
-
-      <div class="field">
-        <div class="field-label">
-          <label for="doa">Estimated DOA:</label>
-        </div>
-        <div class="field-body">
-          <p id="doa"> 0 deg </p>
-        </div>
-        <div class="field-label">
-          <label for="pwr">Signal Power:</label>
-        </div>
-        <div class="field-body">
-          <p id="pwr"> 0 dB </p>
-        </div>
-        <div class="field-label">
-          <label for="conf">DOA Confidence:</label>
-        </div>
-        <div class="field-body">
-          <p id="conf"> 0 </p>
-        </div>
-      </div>
-
-      <form onsubmit="setCookie()">
-        <div class="field">
-          <div class="field-label">
-            <label for="MIN_PWR">Min Power</label>
-          </div>
-          <div class="field-body">
-            <input type="number" class="input" step="0.01" min="0" value="0" max="100" name="MIN_PWR" id="MIN_PWR">
-          </div>
-        </div>
-        <div class="field">
-          <div class="field-label">
-            <label for="MIN_CONF">Min Confidence</label>
-          </div>
-          <div class="field-body">
-            <input type="number" class="input" step="1" min="0" value="0" max="100" name="MIN_CONF" id="MIN_CONF">
-          </div>
-        </div>
-        <div class="field">
-          <input value="Update Compass" type="submit" class="btn"/>
-        </div>
-      </form>
-      <script type="text/javascript">init_compass();</script>
-    </div>
-
-
-    <div class="card">
-      <div class="card-header">
-        <canvas id="doa_graph"></canvas>
-        <script type="text/javascript">init_graph('/static/images/doa.jpg', 'doa_graph');</script>
-      </div>
-      <div id="stats" style="text-align:center;"></div>
-      <script type="text/javascript">ajax_page_refresh('/stats', 'stats');</script>
-    </div>
-
-
-    <div class="card">
-      <div class="card-header">
-        <div id="mapid" style="width: 100%; height: 400px;"></div>
-        <script type='text/javascript'>init_map("{{center_freq}}");</script>
-      </div>
-      <p style="margin:0px; text-align:center;">Signal Direction</p>
-
-      <form onsubmit="setCookie()">
-        <div class="field">
-          <div class="field-label">
-            <label for="location">Auto Detect Location</label>
-          </div>
-          <div class="field-body">
-            <input type="checkbox" name="location" value="on" checked="checked">
-          </div>
-        </div>
-        <div class="field">
-          <div class="field-label">
-            <label for="offset">Set latitude</label>
-          </div>
-          <div class="field-body">
-            <input type="number" class="input" step="0.0001" min="-90" value="0" max="90" name="offset">
-          </div>
-          <div class="field-label">
-            <label for="offset">Set longitude</label>
-          </div>
-          <div class="field-body">
-            <input type="number" class="input" step="0.0001" min="-180" value="0" max="80" name="offset">
-          </div>
-        </div>
-        <div class="field">
-          <div class="field-label">
-            <label for="offset">Bearing offset (dgr)</label>
-          </div>
-          <div class="field-body">
-            <input type="number" class="input" step="1" min="0" value="0" max="360" name="offset">
-          </div>
-        </div>
-        <div class="field">
-          <input value="Update Graph" type="submit" class="btn"/>
-        </div>
-      </form>
-
-    </div>
-
-  </body>
-  </html>
+</body>
+</html>
