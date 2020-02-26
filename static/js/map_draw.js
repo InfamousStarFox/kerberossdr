@@ -9,10 +9,36 @@ var lines = [];
 var initalized = false;
 
 function init_map(freq){
-  if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(function(new_position){
-      position = new_position;
 
+  if(document.getElementById("location_manual").checked){
+    console.log("MANUAL");
+
+    var new_position = {
+      "coords": {
+        "latitude": document.getElementById("latitude").value,
+        "longitude": document.getElementById("longitude").value,
+        "heading": document.getElementById("heading").value,
+      }
+    };
+    position = new_position;
+    start();
+  }
+
+  else if(document.getElementById("location_auto").checked){
+    console.log("AUTO");
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition(function(new_position){
+        position = new_position;
+        document.getElementById("latitude").value = position.coords.latitude.toFixed(4);
+        document.getElementById("longitude").value = position.coords.longitude.toFixed(4);
+        document.getElementById("heading").value = (position.coords.heading !== null) ? position.coords.heading.toFixed(4) : 0;
+        start();
+      });
+    }
+  }
+
+  function start(){
+    if (position !== null) {
       if(initalized){
         // Update map with new marker locations
         update_marker();
@@ -37,7 +63,7 @@ function init_map(freq){
         }
         initalized = true;
       }
-    });
+    }
   }
 }
 

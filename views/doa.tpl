@@ -186,19 +186,19 @@
           <div class="form-group">
             <div class="form-row">
               <label class="col-6 mb-0" for="doa">Estimated DOA:</label>
-              <p class="col-6 mb-0" id="doa"> 0 deg </p>
+              <p class="col-6 mb-0"><span id="doa">0</span> (deg)</p>
             </div>
             <div class="form-row">
               <label class="col-6 mb-0" for="pwr">Signal Power:</label>
-              <p class="col-6 mb-0" id="pwr"> 0 dB </p>
+              <p class="col-6 mb-0"><span id="pwr">0</span> (dB)</p>
             </div>
             <div class="form-row">
               <label class="col-6 mb-0" for="conf">DOA Confidence:</label>
-              <p class="col-6 mb-0" id="conf"> 0 </p>
+              <p class="col-6 mb-0"><span id="conf">0</span></p>
             </div>
           </div>
 
-          <form onsubmit="setCookie()">
+          <form onsubmit="compass.setCookie()">
             <div class="form-group">
               <div class="form-row">
                 <div class="col-6">
@@ -212,10 +212,14 @@
               </div>
             </div>
             <div class="form-group">
+              <label for="OFFSET">Degrees offset</label>
+              <input class="form-control" type="number" class="input" step="1" min="-360" value="0" max="360" id="OFFSET" name="OFFSET">
+            </div>
+            <div class="form-group">
               <input value="Update Compass" type="submit" class="btn btn-secondary w-100"/>
             </div>
           </form>
-          <script type="text/javascript">init_compass();</script>
+          <script type="text/javascript">compass.init();</script>
         </div>
       </div>
 
@@ -237,14 +241,12 @@
         </div>
         <div id="mapid" style="width: 100%; height: 400px;" class="card-img-top"></div>
         <div class="card-body">
-          <script type='text/javascript'>init_map("{{center_freq}}");</script>
-
-          <form onsubmit="setCookie()">
+          <form onsubmit="compass.setCookie()">
             <div class="form-group">
               <label for="location">Location</label>
               <div class="ml-3">
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="location" id="location_auto" value="location_auto" checked="checked">
+                  <input class="form-check-input" type="radio" name="location" id="location_auto" value="location_auto">
                   <label class="form-check-label" for="location_auto">Auto Detect</label>
                 </div>
                 <div class="form-check">
@@ -256,25 +258,21 @@
             <div class="form-group">
               <div class="form-row">
                 <div class="col-6">
-                  <label for="offset">Set latitude</label>
-                  <input class="form-control" type="number" class="input" step="0.0001" min="-90" value="0" max="90" name="offset">
+                  <label for="latitude">Set latitude</label>
+                  <input class="form-control" type="number" class="input" step="0.0001" min="-90" value="0" max="90" id="latitude" name="latitude">
                 </div>
                 <div class="col-6">
-                  <label for="offset">Set longitude</label>
-                  <input class="form-control" type="number" class="input" step="0.0001" min="-180" value="0" max="80" name="offset">
+                  <label for="longitude">Set longitude</label>
+                  <input class="form-control" type="number" class="input" step="0.0001" min="-180" value="0" max="80" id="longitude" name="longitude">
                 </div>
               </div>
             </div>
             <div class="form-group">
-              <label for="offset">Heading (dgr)</label>
-              <input class="form-control" type="number" class="input" step="1" min="0" value="0" max="360" name="heading">
+              <label for="heading">Heading (deg)</label>
+              <input class="form-control" type="number" class="input" step="1" min="0" value="0" max="360" id="heading" name="heading">
             </div>
             <div class="form-group">
-              <label for="offset">Bearing offset (dgr)</label>
-              <input class="form-control" type="number" class="input" step="1" min="0" value="0" max="360" name="offset">
-            </div>
-            <div class="form-group">
-              <input value="Update Graph" type="submit" class="btn btn-secondary w-100"/>
+              <input value="Update Location" type="submit" class="btn btn-secondary w-100"/>
             </div>
           </form>
         </div>
@@ -284,31 +282,50 @@
   </div>
 
   <script type="text/javascript">
-  document.getElementById("meter_min").innerHTML = (mhz_to_meters({{center_freq}})/10).toFixed(4);
-  document.getElementById("meter_max").innerHTML = (mhz_to_meters({{center_freq}})/2).toFixed(4);
-  document.getElementById("meter_best").innerHTML = (mhz_to_meters({{center_freq}})/3).toFixed(4);
-  document.getElementById("feet_min").innerHTML = (mhz_to_feet({{center_freq}})/10).toFixed(4);
-  document.getElementById("feet_max").innerHTML = (mhz_to_feet({{center_freq}})/2).toFixed(4);
-  document.getElementById("feet_best").innerHTML = (mhz_to_feet({{center_freq}})/3).toFixed(4);
-  document.getElementById("inches_min").innerHTML = (mhz_to_inches({{center_freq}})/10).toFixed(4);
-  document.getElementById("inches_max").innerHTML = (mhz_to_inches({{center_freq}})/2).toFixed(4);
-  document.getElementById("inches_best").innerHTML = (mhz_to_inches({{center_freq}})/3).toFixed(4);
-  </script>
-  <script type="text/javascript">
-  function from_meters(valNum) {
-    document.getElementById("inputFeet").value=meters_to_feet(valNum);
-    document.getElementById("inputInches").value=meters_to_inches(valNum);
-  }
-  function from_feet(valNum) {
-    document.getElementById("inputMeters").value=feet_to_meters(valNum);
-    document.getElementById("inputInches").value=feet_to_inches(valNum);
-  }
-  function from_inches(valNum) {
-    document.getElementById("inputMeters").value=inches_to_meters(valNum);
-    document.getElementById("inputFeet").value=inches_to_feet(valNum);
-  }
-  </script>
+    document.getElementById("meter_min").innerHTML = (mhz_to_meters({{center_freq}})/10).toFixed(4);
+    document.getElementById("meter_max").innerHTML = (mhz_to_meters({{center_freq}})/2).toFixed(4);
+    document.getElementById("meter_best").innerHTML = (mhz_to_meters({{center_freq}})/3).toFixed(4);
+    document.getElementById("feet_min").innerHTML = (mhz_to_feet({{center_freq}})/10).toFixed(4);
+    document.getElementById("feet_max").innerHTML = (mhz_to_feet({{center_freq}})/2).toFixed(4);
+    document.getElementById("feet_best").innerHTML = (mhz_to_feet({{center_freq}})/3).toFixed(4);
+    document.getElementById("inches_min").innerHTML = (mhz_to_inches({{center_freq}})/10).toFixed(4);
+    document.getElementById("inches_max").innerHTML = (mhz_to_inches({{center_freq}})/2).toFixed(4);
+    document.getElementById("inches_best").innerHTML = (mhz_to_inches({{center_freq}})/3).toFixed(4);
 
+    function from_meters(valNum) {
+      document.getElementById("inputFeet").value=meters_to_feet(valNum);
+      document.getElementById("inputInches").value=meters_to_inches(valNum);
+    }
+    function from_feet(valNum) {
+      document.getElementById("inputMeters").value=feet_to_meters(valNum);
+      document.getElementById("inputInches").value=feet_to_inches(valNum);
+    }
+    function from_inches(valNum) {
+      document.getElementById("inputMeters").value=inches_to_meters(valNum);
+      document.getElementById("inputFeet").value=inches_to_feet(valNum);
+    }
+
+    window.onload = function(){
+      var manual = document.getElementById("location_manual");
+      var auto = document.getElementById("location_auto");
+      manual.onclick = handler;
+      auto.onclick = handler;
+      function handler(){
+        if(document.getElementById("location_manual").checked){
+          document.getElementById("latitude").disabled = false;
+          document.getElementById("longitude").disabled = false;
+          document.getElementById("heading").disabled = false;
+        }
+        else {
+          document.getElementById("latitude").disabled = true;
+          document.getElementById("longitude").disabled = true;
+          document.getElementById("heading").disabled = true;
+        }
+      }
+      handler();
+    }
+  </script>
+  <script type='text/javascript'>init_map("{{center_freq}}");</script>
   <script src="/static/lib/bootstrap/jquery-1.12.4.min.js"></script>
   <script src="/static/lib/bootstrap/bootstrap.min.js"></script>
 
