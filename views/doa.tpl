@@ -24,12 +24,13 @@
     }
   }
   </script>
+  <script type="text/javascript" src='/static/js/cookie.js'></script>
   <script type="text/javascript" src='/static/js/parseXML.js'></script>
   <script type="text/javascript" src='/static/js/compass.js'></script>
   <script type="text/javascript" src="/static/js/ajaxpage.js"></script>
   <script type="text/javascript" src="/static/js/graph.js"></script>
   <script type='text/javascript' src="/static/js/map_draw.js"></script>
-  <script type='text/javascript' src="/static/js/unit_convert.js"></script>
+  <script type='text/javascript' src="/static/js/convert.js"></script>
 
 </head>
 <body>
@@ -198,7 +199,7 @@
             </div>
           </div>
 
-          <form onsubmit="compass.setCookie()">
+          <form onsubmit="compass.cookie.set()">
             <div class="form-group">
               <div class="form-row">
                 <div class="col-6">
@@ -241,7 +242,7 @@
         </div>
         <div id="mapid" style="width: 100%; height: 400px;" class="card-img-top"></div>
         <div class="card-body">
-          <form onsubmit="compass.setCookie()">
+          <form onsubmit="map.cookie.set()">
             <div class="form-group">
               <label for="location">Location</label>
               <div class="ml-3">
@@ -282,27 +283,27 @@
   </div>
 
   <script type="text/javascript">
-    document.getElementById("meter_min").innerHTML = (mhz_to_meters({{center_freq}})/10).toFixed(4);
-    document.getElementById("meter_max").innerHTML = (mhz_to_meters({{center_freq}})/2).toFixed(4);
-    document.getElementById("meter_best").innerHTML = (mhz_to_meters({{center_freq}})/3).toFixed(4);
-    document.getElementById("feet_min").innerHTML = (mhz_to_feet({{center_freq}})/10).toFixed(4);
-    document.getElementById("feet_max").innerHTML = (mhz_to_feet({{center_freq}})/2).toFixed(4);
-    document.getElementById("feet_best").innerHTML = (mhz_to_feet({{center_freq}})/3).toFixed(4);
-    document.getElementById("inches_min").innerHTML = (mhz_to_inches({{center_freq}})/10).toFixed(4);
-    document.getElementById("inches_max").innerHTML = (mhz_to_inches({{center_freq}})/2).toFixed(4);
-    document.getElementById("inches_best").innerHTML = (mhz_to_inches({{center_freq}})/3).toFixed(4);
+    document.getElementById("meter_min").innerHTML = (convert.mhz.toMeters({{center_freq}})/10).toFixed(4);
+    document.getElementById("meter_max").innerHTML = (convert.mhz.toMeters({{center_freq}})/2).toFixed(4);
+    document.getElementById("meter_best").innerHTML = (convert.mhz.toMeters({{center_freq}})/3).toFixed(4);
+    document.getElementById("feet_min").innerHTML = (convert.mhz.toFeet({{center_freq}})/10).toFixed(4);
+    document.getElementById("feet_max").innerHTML = (convert.mhz.toFeet({{center_freq}})/2).toFixed(4);
+    document.getElementById("feet_best").innerHTML = (convert.mhz.toFeet({{center_freq}})/3).toFixed(4);
+    document.getElementById("inches_min").innerHTML = (convert.mhz.toInches({{center_freq}})/10).toFixed(4);
+    document.getElementById("inches_max").innerHTML = (convert.mhz.toInches({{center_freq}})/2).toFixed(4);
+    document.getElementById("inches_best").innerHTML = (convert.mhz.toInches({{center_freq}})/3).toFixed(4);
 
     function from_meters(valNum) {
-      document.getElementById("inputFeet").value=meters_to_feet(valNum);
-      document.getElementById("inputInches").value=meters_to_inches(valNum);
+      document.getElementById("inputFeet").value=convert.meters.toFeet(valNum);
+      document.getElementById("inputInches").value=convert.meters.toInches(valNum);
     }
     function from_feet(valNum) {
-      document.getElementById("inputMeters").value=feet_to_meters(valNum);
-      document.getElementById("inputInches").value=feet_to_inches(valNum);
+      document.getElementById("inputMeters").value=convert.feet.toMeters(valNum);
+      document.getElementById("inputInches").value=convert.feet.toInches(valNum);
     }
     function from_inches(valNum) {
-      document.getElementById("inputMeters").value=inches_to_meters(valNum);
-      document.getElementById("inputFeet").value=inches_to_feet(valNum);
+      document.getElementById("inputMeters").value=convert.inches.toMeters(valNum);
+      document.getElementById("inputFeet").value=convert.inches.toFeet(valNum);
     }
 
     window.onload = function(){

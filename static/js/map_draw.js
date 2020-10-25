@@ -8,36 +8,58 @@ var position = null;
 var lines = [];
 var initalized = false;
 
-function init_map(freq){
+// Map Library
+var map = {
 
-  if(document.getElementById("location_manual").checked){
-    console.log("MANUAL");
+  // Extends the cookie.js library
+  cookie: {
+    set: function() {
+      cookie.set("latitude", document.getElementById('latitude').value);
+      cookie.set("longitude", document.getElementById('longitude').value);
+      cookie.set("heading", document.getElementById('heading').value);
+    },
+    get: function() {
+      document.getElementById("latitude").value = cookie.balance(cookie.get("latitude"));
+      document.getElementById("longitude").value = cookie.balance(cookie.get("longitude"));
+      document.getElementById("heading").value = cookie.balance(cookie.get("heading"));
+    },
+  },
 
-    var new_position = {
-      "coords": {
-        "latitude": document.getElementById("latitude").value,
-        "longitude": document.getElementById("longitude").value,
-        "heading": document.getElementById("heading").value,
+  // Gets the user's location
+  location: {
+    get: function(callback) {
+      if(document.getElementById("location_manual").checked){
+        var position = {
+          "coords": {
+            "latitude": document.getElementById("latitude").value,
+            "longitude": document.getElementById("longitude").value,
+            "heading": document.getElementById("heading").value,
+          }
+        };
+        callback(position);
       }
-    };
-    position = new_position;
-    start();
-  }
-
-  else if(document.getElementById("location_auto").checked){
-    console.log("AUTO");
-    if (navigator.geolocation) {
-      navigator.geolocation.watchPosition(function(new_position){
-        position = new_position;
-        document.getElementById("latitude").value = position.coords.latitude.toFixed(4);
-        document.getElementById("longitude").value = position.coords.longitude.toFixed(4);
-        document.getElementById("heading").value = (position.coords.heading !== null) ? position.coords.heading.toFixed(4) : 0;
-        start();
-      });
+      else if(document.getElementById("location_auto").checked){
+        // If browser location is supported
+        if (navigator.geolocation) {
+          navigator.geolocation.watchPosition(function(position){
+            document.getElementById("latitude").value = position.coords.latitude.toFixed(4);
+            document.getElementById("longitude").value = position.coords.longitude.toFixed(4);
+            document.getElementById("heading").value = (position.coords.heading !== null) ? position.coords.heading.toFixed(4) : 0;
+            callback(position);
+          });
+        }
+      }
     }
   }
 
-  function start(){
+};
+
+function init_map(freq){
+  map.cookie.get();
+  map.location.get(start);
+
+
+  function start(position){
     if (position !== null) {
       if(initalized){
         // Update map with new marker locations
@@ -130,7 +152,7 @@ function removeLine(line){
 
 
 /*!
-* JavaScript function to calculate the destination point given start point latitude / longitude (numeric degrees), bearing (numeric degrees) and distance (in m).
+* Calculates the destination point given start point latitude / longitude (numeric degrees), bearing (numeric degrees) and distance (in m).
 *
 * Original scripts by Chris Veness
 * Taken from http://movable-type.co.uk/scripts/latlong-vincenty-direct.html and optimized / cleaned up by Mathias Bynens <http://mathiasbynens.be/>

@@ -1,4 +1,4 @@
-function ajaxpage(url, containerid){
+function ajaxpage(url, callback, arg){
   var page_request = false;
 
   // If Mozilla, Safari etc
@@ -25,21 +25,21 @@ function ajaxpage(url, containerid){
   }
 
   page_request.onreadystatechange=function(){
-    loadpage(page_request, containerid);
+    callback(page_request, arg);
   }
   page_request.open('GET', url, true);
   page_request.send(null);
 }
 
-function loadpage(page_request, containerid){
-    if (page_request.readyState == 4 && (page_request.status==200 || window.location.href.indexOf("http")==-1)){
-        document.getElementById(containerid).innerHTML=page_request.responseText;
-    }
-}
-
 function ajax_page_refresh(url, containerid) {
-    ajaxpage(url, containerid);
-    setTimeout(function(){
-        ajax_page_refresh(url, containerid);
-      }, 500);
+  ajaxpage(url, loadpage, containerid);
+  setTimeout(function(){
+      ajax_page_refresh(url, containerid);
+    }, 500);
+
+  function loadpage(page_request, containerid){
+      if (page_request.readyState == 4 && (page_request.status==200 || window.location.href.indexOf("http")==-1)){
+          document.getElementById(containerid).innerHTML=page_request.responseText;
+      }
+  }
 }
